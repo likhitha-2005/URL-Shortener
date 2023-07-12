@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>URL Shortener</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="title">URL Shortener</h1>
+        <form action="/shortUrls" method="POST" autocomplete="off">
+            <div class="search-bar">
+                <input required placeholder="Enter URL to shorter" type="url" name="fullUrl" class="url-input">
+                <button class="submit_button" type="submit" id="urlInput">Shorten</button>
+            </div>
+        </form>
+
+
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Full URL</th>
+                        <th>Short URL</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% shortUrls.forEach(shortUrl=> { %>
+                        <tr>
+                            <td><a href="<%= shortUrl.full %>">
+                                    <%= shortUrl.full %>
+                                </a></td>
+                            <td><a href="<%= shortUrl.short %>">
+                                    <%= shortUrl.short %>
+                                </a></td>
+                            <td>
+                                <form action="/shortUrl/<%= shortUrl._id %>/delete" method="POST">
+                                    <button class="delete-button" type="submit">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <% }) %>
+                </tbody>
+
+            </table>
+        </div>
+    </div>  
+</body>
+
+</html>
