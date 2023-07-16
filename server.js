@@ -5,7 +5,7 @@ const mongoose = require('mongoose')
 const ShortUrl = require('./models/shorturls')
 const app = express()
 
-mongoose.connect('mongodb+srv://likhithaeada:4kyoju0JMkvyHoHE@cluster0.88awtse.mongodb.net/mydatabase?retryWrites=true&w=majority', {
+mongoose.connect('mongodb+srv://likhithaeada:4kyoju0JMkvyHoHE@cluster0.88awtse.mongodb.net/?retryWrites=true&w=majority', {
     useNewUrlParser: true, useUnifiedTopology: true
 })
 
@@ -16,45 +16,43 @@ app.use(express.urlencoded({ extended: false }))
 
 
 app.get('/', async (req, res) => {
-    const searchText = req.query.fullUrl;
+    const { q: searchText } = req.query;
     const shortUrls = searchText
-        ? await ShortUrl.find({
-            $or: [
-                { full: { $regex: searchText, $options: 'i' } },
-                { short: { $regex: searchText, $options: 'i' } },
-            ],
+      ? await ShortUrl.find({
+          $or: [
+            { full: { $regex: searchText, $options: 'i' } },
+            { short: { $regex: searchText, $options: 'i' } },
+          ],
         }).exec()
-        : await ShortUrl.find().exec();
+      : await ShortUrl.find().exec();
     const errorMessage = '';
     res.render('index', { shortUrls, errorMessage });
-});
+  });
 
 app.post('/shortUrls', async (req, res) => {
-    const fullUrl = req.body.fullUrl;
+    const { fullUrl } = req.body;
     const existingShortUrl = await ShortUrl.findOne({ full: fullUrl });
-    console.log(existingShortUrl);
-
+  
     if (existingShortUrl) {
+        let errorMessage = 'URL already exists.';
         const shortUrls = await ShortUrl.find().exec();
-        res.render('index', { shortUrls });
-    }
-    else {
+        res.render('index', { shortUrls, errorMessage });
+    } else {
         await ShortUrl.create({ full: fullUrl });
         res.redirect('/');
     }
-
-});
-
-app.get('/:shortUrl', async (req, res) => {
+  }); 
+  
+  app.get('/:shortUrl', async (req, res) => {
     const shortUrl = await ShortUrl.findOne({ short: req.params.shortUrl });
     if (!shortUrl) return res.sendStatus(404);
-
+  
     await ShortUrl.findOneAndUpdate(
-        { short: req.params.shortUrl },
+      { short: req.params.shortUrl },
     );
-
+  
     res.redirect(301, shortUrl.full);
-});
+  });
 
 app.post('/shortUrl/:id/delete', async (req, res) => {
     try {
