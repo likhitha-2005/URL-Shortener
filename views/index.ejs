@@ -12,6 +12,12 @@
 <body>
     <div class="container">
         <h1 class="title">URL Shortener</h1>
+        <form action="/" method="GET" autocomplete="off">
+            <div class="search-bar">
+                <input required placeholder="Lookup previous URL's" type="url" name="fullUrl" class="url-input">
+                <button class="submit_button" type="submit" id="urlInput">Submit</button>
+            </div>
+        </form>
         <form action="/shortUrls" method="POST" autocomplete="off">
             <div class="search-bar">
                 <input required placeholder="Enter URL to shorter" type="url" name="fullUrl" class="url-input">
@@ -19,6 +25,11 @@
             </div>
         </form>
 
+        <% if (errorMessage) { %> 
+            <div class="error">
+              <%= errorMessage %> 
+            </div>
+          <% } %>
 
         <div class="table-container">
             <table class="table">
